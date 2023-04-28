@@ -1,5 +1,5 @@
 import React from "react";
-import Board from "./Board";
+import Board from '../Board';
 import "./App.css";
 
 /** Simple app that just shows the LightsOut game. */
@@ -7,7 +7,8 @@ import "./App.css";
 function App() {
   return (
     <div className="App">
-      <Board />
+      <h1 className='title'>Lights Out!</h1>
+      <Board/>
     </div>
   );
 }

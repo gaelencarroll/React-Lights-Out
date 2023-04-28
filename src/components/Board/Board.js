@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Cell from "./Cell";
+import Cell from "../Cell";
 import "./Board.css";
 
 /** Game board of Lights out.
@@ -27,18 +27,25 @@ import "./Board.css";
  *
  **/
 
-function Board({ nrows, ncols, chanceLightStartsOn }) {
+function Board({ nrows=5, ncols=5, chanceLightStartsOn=0.25 }) {
   const [board, setBoard] = useState(createBoard());
 
   /** create a board nrows high/ncols wide, each cell randomly lit or unlit */
   function createBoard() {
     let initialBoard = [];
-    // TODO: create array-of-arrays of true/false values
+    for (let i = 0; i < nrows; i++){
+      let row =[];
+      for(let j = 0; j < ncols; j++){
+        row.push(Math.random() < chanceLightStartsOn)
+      }
+      initialBoard.push(row)
+    }
     return initialBoard;
   }
 
   function hasWon() {
-    // TODO: check the board in state to determine whether the player has won.
+    const winner = board.every(row => row.every(cell => !cell))
+    return winner;
   }
 
   function flipCellsAround(coord) {
@@ -53,6 +60,16 @@ function Board({ nrows, ncols, chanceLightStartsOn }) {
         }
       };
 
+      const newBoard = oldBoard.map(row => [...row]);
+
+      flipCell(y,x,newBoard);
+      flipCell(y+1,x,newBoard);
+      flipCell(y-1,x,newBoard);
+      flipCell(y,x+1,newBoard);
+      flipCell(y,x-1,newBoard);
+
+      return newBoard;
+
       // TODO: Make a (deep) copy of the oldBoard
 
       // TODO: in the copy, flip this cell and the cells around it
@@ -61,6 +78,28 @@ function Board({ nrows, ncols, chanceLightStartsOn }) {
     });
   }
 
+  if(hasWon()){
+    return <section>You won!</section>
+  }
+
+  let tableBoard = [];
+
+  for(let y = 0; y < nrows; y++){
+    let row = [];
+    for(let x = 0; x < ncols; x++){
+      let cellKey = `${y}-${x}`
+      row.push(
+        <Cell key={cellKey} flipCellsAroundMe={() => flipCellsAround(cellKey)} isLit={board[y][x]}></Cell>
+      )
+    }
+    tableBoard.push(<tr key={y}>{row}</tr>)
+  }
+
+  return(
+    <table className="Board">
+      <tbod>{tableBoard}</tbod>
+    </table>
+  )
   // if the game is won, just show a winning msg & render nothing else
 
   // TODO
